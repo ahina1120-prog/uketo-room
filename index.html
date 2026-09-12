@@ -136,7 +136,23 @@
       background 0.2s,
       box-shadow 0.2s;
   }
+.point-button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: bold;
+  background: #d8f3dc;
+  color: #4f7d5a;
+  cursor: pointer;
+  opacity: 0.5;
+}
 
+.point-button.active {
+  opacity: 1;
+}
   .receive-button.active {
     background: linear-gradient(
       135deg,
@@ -286,15 +302,16 @@ const pointButton =
       button.disabled = false;
 pointButton.disabled = false;
       button.classList.add("active");
+pointButton.classList.add("active");
+ } else {
 
-    } else {
+  button.disabled = true;
+  pointButton.disabled = true;
 
-      button.disabled = true;
+  button.classList.remove("active");
+  pointButton.classList.remove("active");
 
-      button.classList.remove("active");
-
-    }
-
+}
   });
 
 
