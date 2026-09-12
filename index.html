@@ -298,7 +298,10 @@
       return;
     }
 
-    resultMessage.style.display = "block";
+const baseUrl = "https://pay.paypay.ne.jp/";
+const paypayUrl = baseUrl + value;
+
+window.location.href = paypayUrl;
 
   });
 
