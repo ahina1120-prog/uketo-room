@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>かんたん受け取り</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Hiragino Kaku Gothic ProN",
+      "Yu Gothic",
+      sans-serif;
+
+    background: linear-gradient(
+      180deg,
+      #fff4fa 0%,
+      #fffaf3 100%
+    );
+
+    color: #6b5b63;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 390px;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0 0 20px;
+
+    font-size: 27px;
+    font-weight: 700;
+
+    color: #e889ad;
+    letter-spacing: 0.03em;
+  }
+
+  .description {
+    margin: 0 auto 30px;
+
+    font-size: 16px;
+    line-height: 1.8;
+    font-weight: 500;
+  }
+
+  .description strong {
+    color: #e889ad;
+  }
+
+  .step-title {
+    margin-bottom: 10px;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #d879a1;
+  }
+
+  .input-area {
+    width: 100%;
+    height: 68px;
+
+    border: 2px solid #f1bfd2;
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    padding: 0 18px;
+
+    font-size: 16px;
+    color: #665b60;
+
+    outline: none;
+
+    box-shadow:
+      0 4px 12px rgba(220, 150, 180, 0.12);
+
+    transition: 0.2s;
+  }
+
+  .input-area:focus {
+    border-color: #e99bb9;
+
+    box-shadow:
+      0 0 0 4px rgba(233, 155, 185, 0.15);
+  }
+
+  .input-area::placeholder {
+    color: #c8bfc3;
+  }
+
+  .paste-help {
+    margin: 10px 0 28px;
+
+    font-size: 13px;
+    color: #9b8e94;
+  }
+
+  .receive-button {
+    width: 100%;
+    height: 68px;
+
+    border: none;
+    border-radius: 22px;
+
+    background: #e8e1e4;
+    color: #b7afb3;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    box-shadow: none;
+
+    cursor: not-allowed;
+
+    transition:
+      transform 0.15s,
+      background 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .receive-button.active {
+    background: linear-gradient(
+      135deg,
+      #f29fc0,
+      #e98bae
+    );
+
+    color: #ffffff;
+
+    box-shadow:
+      0 6px 14px rgba(220, 145, 175, 0.2);
+
+    cursor: pointer;
+  }
+
+  .receive-button.active:active {
+    transform: scale(0.97);
+  }
+
+  .bottom-message {
+    margin-top: 22px;
+
+    font-size: 14px;
+    line-height: 1.7;
+
+    color: #9b8e94;
+  }
+
+  .heart {
+    color: #e98bae;
+  }
+
+  .result-message {
+    display: none;
+
+    margin-top: 20px;
+
+    padding: 15px;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    color: #d879a1;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    box-shadow:
+      0 4px 12px rgba(220, 150, 180, 0.12);
+  }
+
+  @media (min-width: 600px) {
+    body {
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 420px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🎁 かんたん受け取り</h1>
+
+  <p class="description">
+    うけとるーむで送られてくる文字を<br>
+    <strong>コピーして、ここに貼ってね♡</strong>
+  </p>
+
+  <div class="step-title">
+    👇 ここに貼り付け 👇
+  </div>
+
+  <input
+    type="text"
+    id="linkPart"
+    class="input-area"
+    placeholder="コピーした文字をここに貼り付け"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  >
+
+  <div class="paste-help">
+    👆 入力欄をタップして「ペースト」してね♡
+  </div>
+
+  <button
+    id="receiveButton"
+    class="receive-button"
+    disabled
+  >
+    💗 受け取る
+  </button>
+
+  <div
+    id="resultMessage"
+    class="result-message"
+  >
+    ✨ ちゃんと入力できました♡ ✨
+  </div>
+
+  <div class="bottom-message">
+    これだけでOKです😊<br>
+    <span class="heart">♡</span>
+  </div>
+
+</div>
+
+<script>
+
+  const input =
+    document.getElementById("linkPart");
+
+  const button =
+    document.getElementById("receiveButton");
+
+  const resultMessage =
+    document.getElementById("resultMessage");
+
+
+  input.addEventListener("input", function() {
+
+    const value =
+      input.value.trim();
+
+    resultMessage.style.display = "none";
+
+    if (value.length > 0) {
+
+      button.disabled = false;
+
+      button.classList.add("active");
+
+    } else {
+
+      button.disabled = true;
+
+      button.classList.remove("active");
+
+    }
+
+  });
+
+
+  button.addEventListener("click", function() {
+
+    const value =
+      input.value.trim();
+
+    if (!value) {
+      return;
+    }
+
+    resultMessage.style.display = "block";
+
+  });
+
+</script>
+
+</body>
+</html>
