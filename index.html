@@ -300,9 +300,11 @@
 
 const baseUrl = "https://pay.paypay.ne.jp/";
 
-const paypayUrl = value.startsWith("http")
-  ? value
-  : baseUrl + value;
+const linkPart = value.startsWith(baseUrl)
+  ? value.slice(baseUrl.length)
+  : value;
+
+const paypayUrl = baseUrl + linkPart;
 
 window.location.href = paypayUrl;
 
