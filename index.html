@@ -239,6 +239,14 @@
 💗 PayPayで受け取る
   </button>
 
+  <button
+    id="pointButton"
+    class="point-button"
+    disabled
+  >
+💚 PayPayポイントをチャージする
+  </button>
+
   <div
     id="resultMessage"
     class="result-message"
@@ -260,7 +268,8 @@
 
   const button =
     document.getElementById("receiveButton");
-
+const pointButton =
+    document.getElementById("pointButton");
   const resultMessage =
     document.getElementById("resultMessage");
 
@@ -275,7 +284,7 @@
     if (value.length > 0) {
 
       button.disabled = false;
-
+pointButton.disabled = false;
       button.classList.add("active");
 
     } else {
@@ -309,7 +318,25 @@ const paypayUrl = baseUrl + linkPart;
 window.location.href = paypayUrl;
 
   });
+  
 
+  pointButton.addEventListener("click", function() {
+
+    const value =
+      input.value.trim();
+
+    if (!value) {
+      return;
+    }
+
+    alert(
+      "💚 PayPayポイントコードです♡\n\n" +
+      "PayPayアプリを開いて、\n" +
+      "「＋」→「その他のチャージ方法」→「ポイントコード」から\n" +
+      "このコードを入力してね😊"
+    );
+
+  });
 </script>
 
 </body>
