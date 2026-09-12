@@ -236,7 +236,7 @@
     class="receive-button"
     disabled
   >
-    💗 受け取る
+💗 PayPayで受け取る
   </button>
 
   <div
@@ -299,7 +299,10 @@
     }
 
 const baseUrl = "https://pay.paypay.ne.jp/";
-const paypayUrl = baseUrl + value;
+
+const paypayUrl = value.startsWith("http")
+  ? value
+  : baseUrl + value;
 
 window.location.href = paypayUrl;
 
