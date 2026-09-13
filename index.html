@@ -266,7 +266,8 @@ import {
   getDatabase,
   ref,
   set,
-  get
+  get,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 
@@ -546,14 +547,50 @@ button.addEventListener(
         }
 
 
-        /* =========================
-           PayPayリンクを開く
-           ========================= */
+      /* =========================
+   一度だけ使用できるようにする
+   ========================= */
 
-        window.location.href =
-          data.url;
+const result =
+  await runTransaction(linkRef, (currentData) => {
 
-        return;
+    if (!currentData) {
+      return;
+    }
+
+    if (currentData.status !== "active") {
+      return;
+    }
+
+    return {
+      ...currentData,
+      status: "used"
+    };
+
+  });
+
+
+if (!result.committed) {
+
+  resultMessage.textContent =
+    "🎁 この受け取りページは\nすでに使用されています♡";
+
+  button.style.display =
+    "none";
+
+  return;
+
+}
+
+
+/* =========================
+   PayPayリンクを開く
+   ========================= */
+
+window.location.href =
+  result.snapshot.val().url;
+
+return;
 
 
       } catch (error) {
