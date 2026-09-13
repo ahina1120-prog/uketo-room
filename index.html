@@ -338,7 +338,15 @@ button.disabled = false;
     "block";
 
 }
-
+    get(ref(db, "links/" + giftId))
+      .then((snapshot) => {
+        if (snapshot.exists() &&
+            snapshot.val().status !== "active") {
+          resultMessage.textContent =
+            "🎁 受け取り済みです♡";
+          button.style.display = "none";
+        }
+      });
 
 /* =========================
    通常ページの場合
