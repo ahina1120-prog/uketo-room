@@ -537,7 +537,16 @@ button.addEventListener("click", async function() {
 
     resultMessage.style.display =
       "block";
-
+    get(ref(db, "links/" + giftId))
+    .then((snapshot) => {
+      if (snapshot.exists() &&
+          snapshot.val().status !== "active") {
+        resultMessage.textContent =
+          "🎁 受け取り済みです♡";
+        button.style.display =
+          "none";
+      }
+    });
   }
 
 });
