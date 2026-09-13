@@ -267,7 +267,6 @@ import {
   ref,
   set,
   get,
-  runTransaction
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 
@@ -547,49 +546,12 @@ button.addEventListener(
         }
 
 
-      /* =========================
-   一度だけ使用できるようにする
-   ========================= */
-
-const result =
-  await runTransaction(linkRef, (currentData) => {
-
-    if (!currentData) {
-      return;
-    }
-
-    if (currentData.status !== "active") {
-      return;
-    }
-
-    return {
-      ...currentData,
-      status: "used"
-    };
-
-  });
-
-
-if (!result.committed) {
-
-  resultMessage.textContent =
-    "🎁 この受け取りページは\nすでに使用されています♡";
-
-  button.style.display =
-    "none";
-
-  return;
-
-}
-
-
 /* =========================
    PayPayリンクを開く
    ========================= */
 
-window.location.replace(
-  result.snapshot.val().url
-);
+window.location.href =
+  data.url;
 
 return;
 
