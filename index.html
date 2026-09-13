@@ -281,24 +281,77 @@ signInAnonymously(auth)
   .then(() => console.log("匿名ログイン成功"))
   .catch((error) => console.error("匿名ログイン失敗", error));
 </script>
- <script>
+<script type="module">
 
-  const input =
-    document.getElementById("linkPart");
+import { getApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  getAuth,
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  update
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-  const button =
-    document.getElementById("receiveButton");
 
-  const resultMessage =
-    document.getElementById("resultMessage");
+const app = getApp();
+const auth = getAuth(app);
+const db = getDatabase(app);
 
+
+const input =
+  document.getElementById("linkPart");
+
+const button =
+  document.getElementById("receiveButton");
+
+const resultMessage =
+  document.getElementById("resultMessage");
+
+
+/* =========================
+   受け取りページの場合
+   ========================= */
+
+const params =
+  new URLSearchParams(window.location.search);
+
+const giftId =
+  params.get("gift");
+
+
+if (giftId) {
+
+  input.style.display = "none";
+
+  button.textContent =
+    "💗 PayPayで受け取る";
+
+  resultMessage.textContent =
+    "🎁 PayPayが届いてるよ♡";
+
+  resultMessage.style.display =
+    "block";
+
+}
+
+
+/* =========================
+   通常ページの場合
+   ========================= */
+
+if (!giftId) {
 
   input.addEventListener("input", function() {
 
     const value =
       input.value.trim();
 
-    resultMessage.style.display = "none";
+    resultMessage.style.display =
+      "none";
 
     if (value.length > 0) {
 
@@ -306,42 +359,180 @@ signInAnonymously(auth)
 
       button.classList.add("active");
 
- } else {
+    } else {
 
-  button.disabled = true;
-  
+      button.disabled = true;
 
-  button.classList.remove("active");
+      button.classList.remove("active");
 
-
-}
-  });
-
-
-  button.addEventListener("click", function() {
-
-    const value =
-      input.value.trim();
-
-    if (!value) {
-      return;
     }
 
-const baseUrl = "https://pay.paypay.ne.jp/";
-
-const linkPart = value.startsWith(baseUrl)
-  ? value.slice(baseUrl.length)
-  : value;
-
-const paypayUrl = baseUrl + linkPart;
-
-window.location.href = paypayUrl;
-
   });
-  
 
+}
+
+
+/* =========================
+   ボタンを押したとき
+   ========================= */
+
+button.addEventListener("click", async function() {
+
+
+  /* -------------------------
+     受け取りページ
+     ------------------------- */
+
+  if (giftId) {
+
+    try {
+
+      const linkRef =
+        ref(db, "links/" + giftId);
+
+      const snapshot =
+        await get(linkRef);
+
+      if (!snapshot.exists()) {
+
+        resultMessage.textContent =
+          "この受け取りページは存在しません💦";
+
+        button.style.display =
+          "none";
+
+        return;
+
+      }
+
+
+      const data =
+        snapshot.val();
+
+
+      if (data.status !== "active") {
+
+        resultMessage.textContent =
+          "🎁 受け取り済みです♡";
+
+        button.style.display =
+          "none";
+
+        return;
+
+      }
+
+
+      await update(linkRef, {
+        status: "used"
+      });
+
+
+      resultMessage.textContent =
+        "🎁 受け取り済みです♡";
+
+      button.style.display =
+        "none";
+
+
+      window.location.href =
+        data.url;
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      resultMessage.textContent =
+        "うまく受け取れませんでした💦";
+
+    }
+
+    return;
+
+  }
+
+
+  /* -------------------------
+     新しい受け取りページを作る
+     ------------------------- */
+
+  const value =
+    input.value.trim();
+
+  if (!value) {
+    return;
+  }
+
+
+  const baseUrl =
+    "https://pay.paypay.ne.jp/";
+
+
+  const linkPart =
+    value.startsWith(baseUrl)
+      ? value.slice(baseUrl.length)
+      : value;
+
+
+  const paypayUrl =
+    baseUrl + linkPart;
+
+
+  try {
+
+    await signInAnonymously(auth);
+
+
+    const giftId =
+      crypto.randomUUID().replaceAll("-", "");
+
+
+    const linkRef =
+      ref(db, "links/" + giftId);
+
+
+    await set(linkRef, {
+
+      url: paypayUrl,
+
+      status: "active",
+
+      createdAt: Date.now()
+
+    });
+
+
+    const giftUrl =
+      window.location.origin +
+      window.location.pathname +
+      "?gift=" +
+      giftId;
+
+
+    resultMessage.textContent =
+      "🎁 受け取りページができました♡\n\n" +
+      giftUrl;
+
+
+    resultMessage.style.display =
+      "block";
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    resultMessage.textContent =
+      "ページ作成に失敗しました💦";
+
+    resultMessage.style.display =
+      "block";
+
+  }
+
+});
 
 </script>
-
 </body>
 </html>
