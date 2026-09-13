@@ -301,7 +301,6 @@ const app = getApp();
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-
 const input =
   document.getElementById("linkPart");
 
@@ -329,7 +328,7 @@ if (giftId) {
 
   button.textContent =
     "💗 PayPayで受け取る";
-
+button.disabled = false;
   resultMessage.textContent =
     "🎁 PayPayが届いてるよ♡";
 
