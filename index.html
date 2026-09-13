@@ -293,13 +293,14 @@ import {
   ref,
   set,
   get,
-  update
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 
 const app = getApp();
 const auth = getAuth(app);
 const db = getDatabase(app);
+
 
 const input =
   document.getElementById("linkPart");
@@ -310,9 +311,24 @@ const button =
 const resultMessage =
   document.getElementById("resultMessage");
 
+const pageTitle =
+  document.getElementById("pageTitle");
+
+const description =
+  document.getElementById("description");
+
+const stepTitle =
+  document.getElementById("stepTitle");
+
+const pasteHelp =
+  document.querySelector(".paste-help");
+
+const bottomMessage =
+  document.getElementById("bottomMessage");
+
 
 /* =========================
-   受け取りページの場合
+   URLから受け取りIDを取得
    ========================= */
 
 const params =
@@ -322,37 +338,118 @@ const giftId =
   params.get("gift");
 
 
+/* =========================
+   受け取りページ
+   ========================= */
+
 if (giftId) {
 
+  pageTitle.textContent =
+    "🎁 PayPayが届いてるよ♡";
+
+  description.textContent =
+    "あなたへのPayPayです♡";
+
   input.style.display = "none";
-    document.querySelector(".step-title").style.display = "none";
-    document.querySelector(".paste-help").style.display = "none";
+
+  if (stepTitle) {
+    stepTitle.style.display = "none";
+  }
+
+  if (pasteHelp) {
+    pasteHelp.style.display = "none";
+  }
+
+  if (bottomMessage) {
+    bottomMessage.style.display = "none";
+  }
+
   button.textContent =
     "💗 PayPayで受け取る";
-button.disabled = false;
- button.classList.add("active");
+
   resultMessage.textContent =
     "🎁 PayPayが届いてるよ♡";
 
   resultMessage.style.display =
     "block";
 
+
+  try {
+
+    if (!auth.currentUser) {
+      await signInAnonymously(auth);
+    }
+
+    const linkRef =
+      ref(db, "links/" + giftId);
+
+    const snapshot =
+      await get(linkRef);
+
+
+    if (!snapshot.exists()) {
+
+      resultMessage.textContent =
+        "この受け取りページは存在しません💦";
+
+      button.style.display =
+        "none";
+
+    } else if (snapshot.val().status !== "active") {
+
+      resultMessage.textContent =
+        "🎁 受け取り済みです♡";
+
+      button.style.display =
+        "none";
+
+    } else {
+
+      button.disabled = false;
+
+      button.classList.add("active");
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    resultMessage.textContent =
+      "ページを確認できませんでした💦";
+
+    button.style.display =
+      "none";
+
+  }
+
 }
-    get(ref(db, "links/" + giftId))
-      .then((snapshot) => {
-        if (snapshot.exists() &&
-            snapshot.val().status !== "active") {
-          resultMessage.textContent =
-            "🎁 受け取り済みです♡";
-          button.style.display = "none";
-        }
-      });
+
 
 /* =========================
-   通常ページの場合
+   通常ページ
    ========================= */
 
 if (!giftId) {
+
+  pageTitle.textContent =
+    "🎁 PayPayを送る";
+
+  description.textContent =
+    "PayPayリンクを貼ってね♡";
+
+
+  if (stepTitle) {
+    stepTitle.textContent =
+      "👇 PayPayリンクを貼り付け 👇";
+  }
+
+
+  if (pasteHelp) {
+    pasteHelp.textContent =
+      "PayPayの送るリンクをそのまま貼り付けてね♡";
+  }
+
 
   input.addEventListener("input", function() {
 
@@ -361,6 +458,7 @@ if (!giftId) {
 
     resultMessage.style.display =
       "none";
+
 
     if (value.length > 0) {
 
@@ -388,38 +486,50 @@ if (!giftId) {
 button.addEventListener("click", async function() {
 
 
-  /* -------------------------
-     受け取りページ
-     ------------------------- */
+  /* =========================
+     受け取りページの場合
+     ========================= */
 
   if (giftId) {
 
     try {
 
-      const linkRef =
-        ref(db, "links/" + giftId);
-
-      const snapshot =
-        await get(linkRef);
-
-      if (!snapshot.exists()) {
-
-        resultMessage.textContent =
-          "この受け取りページは存在しません💦";
-
-        button.style.display =
-          "none";
-
-        return;
-
+      if (!auth.currentUser) {
+        await signInAnonymously(auth);
       }
 
 
-      const data =
-        snapshot.val();
+      const linkRef =
+        ref(db, "links/" + giftId);
 
 
-      if (data.status !== "active") {
+      /*
+       * active → used を
+       * Firebase側で安全に1回だけ変更
+       */
+
+      const result =
+        await runTransaction(linkRef, function(currentData) {
+
+          if (
+            currentData &&
+            currentData.status === "active"
+          ) {
+
+            return {
+              url: currentData.url,
+              status: "used",
+              createdAt: currentData.createdAt
+            };
+
+          }
+
+          return;
+
+        });
+
+
+      if (!result.committed) {
 
         resultMessage.textContent =
           "🎁 受け取り済みです♡";
@@ -432,9 +542,8 @@ button.addEventListener("click", async function() {
       }
 
 
-      await update(linkRef, {
-        status: "used"
-      });
+      const data =
+        result.snapshot.val();
 
 
       resultMessage.textContent =
@@ -462,12 +571,13 @@ button.addEventListener("click", async function() {
   }
 
 
-  /* -------------------------
-     新しい受け取りページを作る
-     ------------------------- */
+  /* =========================
+     受け取りページを作る
+     ========================= */
 
   const value =
     input.value.trim();
+
 
   if (!value) {
     return;
@@ -490,15 +600,17 @@ button.addEventListener("click", async function() {
 
   try {
 
-    await signInAnonymously(auth);
+    if (!auth.currentUser) {
+      await signInAnonymously(auth);
+    }
 
 
-    const giftId =
+    const newGiftId =
       crypto.randomUUID().replaceAll("-", "");
 
 
     const linkRef =
-      ref(db, "links/" + giftId);
+      ref(db, "links/" + newGiftId);
 
 
     await set(linkRef, {
@@ -516,7 +628,7 @@ button.addEventListener("click", async function() {
       window.location.origin +
       window.location.pathname +
       "?gift=" +
-      giftId;
+      newGiftId;
 
 
     resultMessage.textContent =
@@ -537,20 +649,9 @@ button.addEventListener("click", async function() {
 
     resultMessage.style.display =
       "block";
-    get(ref(db, "links/" + giftId))
-    .then((snapshot) => {
-      if (snapshot.exists() &&
-          snapshot.val().status !== "active") {
-        resultMessage.textContent =
-          "🎁 受け取り済みです♡";
-        button.style.display =
-          "none";
-      }
-    });
+
   }
 
 });
-
-</script>
 </body>
 </html>
