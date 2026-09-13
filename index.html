@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>かんたん受け取り</title>
-
+<script>
+  if (new URLSearchParams(window.location.search).get("gift")) {
+    document.documentElement.classList.add("gift-loading");
+  }
+</script>
  <style>
   
    html.gift-loading .container {
@@ -210,22 +214,21 @@
 
 <div class="container">
 
-<h1 id="pageTitle">🎁 PayPayが届いてるよ♡</h1>
+<h1 id="pageTitle">🎁 PayPayを送る</h1>
 
 <p class="description" id="description">
-  うけとるーむで送られてくる文字を<br>
-  <strong>コピーして、ここに貼ってね♡</strong>
+  PayPayリンクを貼ってね♡
 </p>
 
 <div class="step-title" id="stepTitle">
-  👇 ここに貼り付け 👇
+  👇 PayPayリンクを貼り付け 👇
 </div>
 
 <input
   type="text"
   id="linkPart"
   class="input-area"
-  placeholder="コピーした文字をここに貼り付け"
+placeholder="PayPayリンクを貼り付け"
   autocomplete="off"
   autocorrect="off"
   autocapitalize="off"
@@ -259,9 +262,7 @@
 </div>
 
 <script type="module">
-if (new URLSearchParams(window.location.search).get("gift")) {
-  document.documentElement.classList.add("gift-loading");
-}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
 import {
