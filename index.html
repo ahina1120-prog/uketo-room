@@ -254,7 +254,34 @@
 
 </div>
 
-<script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+ import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+ // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDbU8RmK0JwrmS7DqV7XVvHSCCmu7OLihc",
+    authDomain: "uketo-room.firebaseapp.com",
+    databaseURL: "https://uketo-room-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "uketo-room",
+    storageBucket: "uketo-room.firebasestorage.app",
+    messagingSenderId: "109861986967",
+    appId: "1:109861986967:web:57fff118fcb4dcdb67bfd2"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+signInAnonymously(auth)
+  .then(() => console.log("匿名ログイン成功"))
+  .catch((error) => console.error("匿名ログイン失敗", error));
+</script>
+ <script>
 
   const input =
     document.getElementById("linkPart");
