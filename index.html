@@ -587,8 +587,9 @@ if (!result.committed) {
    PayPayリンクを開く
    ========================= */
 
-window.location.href =
-  result.snapshot.val().url;
+window.location.replace(
+  result.snapshot.val().url
+);
 
 return;
 
