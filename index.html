@@ -6,7 +6,12 @@
 
 <title>かんたん受け取り</title>
 
-<style>
+ <style>
+  
+   html.gift-loading .container {
+    visibility: hidden;
+  }
+  
   * {
     box-sizing: border-box;
   }
@@ -254,7 +259,9 @@
 </div>
 
 <script type="module">
-
+if (new URLSearchParams(window.location.search).get("gift")) {
+  document.documentElement.classList.add("gift-loading");
+}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
 import {
@@ -346,6 +353,8 @@ try {
    ========================= */
 
 if (giftId) {
+
+  document.documentElement.classList.remove("gift-loading");
 
   pageTitle.textContent =
     "🎁 PayPayが届いてるよ♡";
