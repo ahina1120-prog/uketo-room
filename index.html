@@ -208,97 +208,83 @@
 <h1 id="pageTitle">🎁 PayPayが届いてるよ♡</h1>
 
 <p class="description" id="description">
-    うけとるーむで送られてくる文字を<br>
-    <strong>コピーして、ここに貼ってね♡</strong>
-  </p>
+  うけとるーむで送られてくる文字を<br>
+  <strong>コピーして、ここに貼ってね♡</strong>
+</p>
 
 <div class="step-title" id="stepTitle">
-    👇 ここに貼り付け 👇
-  </div>
+  👇 ここに貼り付け 👇
+</div>
 
-  <input
-    type="text"
-    id="linkPart"
-    class="input-area"
-    placeholder="コピーした文字をここに貼り付け"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="false"
-  >
+<input
+  type="text"
+  id="linkPart"
+  class="input-area"
+  placeholder="コピーした文字をここに貼り付け"
+  autocomplete="off"
+  autocorrect="off"
+  autocapitalize="off"
+  spellcheck="false"
+>
 
-  <div class="paste-help">
-    👆 入力欄をタップして「ペースト」してね♡
-  </div>
+<div class="paste-help">
+  👆 入力欄をタップして「ペースト」してね♡
+</div>
 
-  <button
-    id="receiveButton"
-    class="receive-button"
-    disabled
-  >
-💗 受け取りページを作る
-  </button>
+<button
+  id="receiveButton"
+  class="receive-button"
+  disabled
+>
+  💗 受け取りページを作る
+</button>
 
-
-  <div
-    id="resultMessage"
-    class="result-message"
-  >
-    ✨ ちゃんと入力できました♡ ✨
-  </div>
+<div
+  id="resultMessage"
+  class="result-message"
+>
+  ✨ ちゃんと入力できました♡ ✨
+</div>
 
 <div class="bottom-message" id="bottomMessage">
-    これだけでOKです😊<br>
-    <span class="heart">♡</span>
-  </div>
+  これだけでOKです😊<br>
+  <span class="heart">♡</span>
+</div>
 
 </div>
 
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
- import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
- // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDbU8RmK0JwrmS7DqV7XVvHSCCmu7OLihc",
-    authDomain: "uketo-room.firebaseapp.com",
-    databaseURL: "https://uketo-room-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "uketo-room",
-    storageBucket: "uketo-room.firebasestorage.app",
-    messagingSenderId: "109861986967",
-    appId: "1:109861986967:web:57fff118fcb4dcdb67bfd2"
-  };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
-signInAnonymously(auth)
-  .then(() => console.log("匿名ログイン成功"))
-  .catch((error) => console.error("匿名ログイン失敗", error));
-</script>
-<script type="module">
-
-import { getApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {
   getAuth,
   signInAnonymously
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
 import {
   getDatabase,
   ref,
   set,
-  get,
-  runTransaction
+  get
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 
-const app = getApp();
+const firebaseConfig = {
+  apiKey: "AIzaSyDbU8RmK0JwrmS7DqV7XVvHSCCmu7OLihc",
+  authDomain: "uketo-room.firebaseapp.com",
+  databaseURL: "https://uketo-room-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "uketo-room",
+  storageBucket: "uketo-room.firebasestorage.app",
+  messagingSenderId: "109861986967",
+  appId: "1:109861986967:web:57fff118fcb4dcdb67bfd2"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getDatabase(app);
 
 
@@ -339,6 +325,23 @@ const giftId =
 
 
 /* =========================
+   Firebase匿名ログイン
+   ========================= */
+
+try {
+
+  await signInAnonymously(auth);
+
+  console.log("匿名ログイン成功");
+
+} catch (error) {
+
+  console.error("匿名ログイン失敗", error);
+
+}
+
+
+/* =========================
    受け取りページ
    ========================= */
 
@@ -350,18 +353,22 @@ if (giftId) {
   description.textContent =
     "あなたへのPayPayです♡";
 
-  input.style.display = "none";
+  input.style.display =
+    "none";
 
   if (stepTitle) {
-    stepTitle.style.display = "none";
+    stepTitle.style.display =
+      "none";
   }
 
   if (pasteHelp) {
-    pasteHelp.style.display = "none";
+    pasteHelp.style.display =
+      "none";
   }
 
   if (bottomMessage) {
-    bottomMessage.style.display = "none";
+    bottomMessage.style.display =
+      "none";
   }
 
   button.textContent =
@@ -375,10 +382,6 @@ if (giftId) {
 
 
   try {
-
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
-    }
 
     const linkRef =
       ref(db, "links/" + giftId);
@@ -405,7 +408,8 @@ if (giftId) {
 
     } else {
 
-      button.disabled = false;
+      button.disabled =
+        false;
 
       button.classList.add("active");
 
@@ -440,41 +444,50 @@ if (!giftId) {
 
 
   if (stepTitle) {
+
     stepTitle.textContent =
       "👇 PayPayリンクを貼り付け 👇";
+
   }
 
 
   if (pasteHelp) {
+
     pasteHelp.textContent =
       "PayPayの送るリンクをそのまま貼り付けてね♡";
+
   }
 
 
-  input.addEventListener("input", function() {
+  input.addEventListener(
+    "input",
+    function() {
 
-    const value =
-      input.value.trim();
+      const value =
+        input.value.trim();
 
-    resultMessage.style.display =
-      "none";
+      resultMessage.style.display =
+        "none";
 
 
-    if (value.length > 0) {
+      if (value.length > 0) {
 
-      button.disabled = false;
+        button.disabled =
+          false;
 
-      button.classList.add("active");
+        button.classList.add("active");
 
-    } else {
+      } else {
 
-      button.disabled = true;
+        button.disabled =
+          true;
 
-      button.classList.remove("active");
+        button.classList.remove("active");
+
+      }
 
     }
-
-  });
+  );
 
 }
 
@@ -483,78 +496,143 @@ if (!giftId) {
    ボタンを押したとき
    ========================= */
 
-button.addEventListener("click", async function() {
+button.addEventListener(
+  "click",
+  async function() {
 
 
-  /* =========================
-     受け取りページの場合
-     ========================= */
+    /* =========================
+       受け取りページの場合
+       ========================= */
 
-  if (giftId) {
+    if (giftId) {
 
-    try {
+      try {
 
-      if (!auth.currentUser) {
-        await signInAnonymously(auth);
-      }
+        const linkRef =
+          ref(db, "links/" + giftId);
 
-
-      const linkRef =
-        ref(db, "links/" + giftId);
+        const snapshot =
+          await get(linkRef);
 
 
-      /*
-       * active → used を
-       * Firebase側で安全に1回だけ変更
-       */
+        if (!snapshot.exists()) {
 
-      const result =
-        await runTransaction(linkRef, function(currentData) {
+          resultMessage.textContent =
+            "この受け取りページは存在しません💦";
 
-          if (
-            currentData &&
-            currentData.status === "active"
-          ) {
-
-            return {
-              url: currentData.url,
-              status: "used",
-              createdAt: currentData.createdAt
-            };
-
-          }
+          button.style.display =
+            "none";
 
           return;
 
-        });
+        }
 
 
-      if (!result.committed) {
+        const data =
+          snapshot.val();
+
+
+        if (data.status !== "active") {
+
+          resultMessage.textContent =
+            "🎁 受け取り済みです♡";
+
+          button.style.display =
+            "none";
+
+          return;
+
+        }
+
+
+        /* =========================
+           PayPayリンクを開く
+           ========================= */
+
+        window.location.href =
+          data.url;
+
+        return;
+
+
+      } catch (error) {
+
+        console.error(error);
 
         resultMessage.textContent =
-          "🎁 受け取り済みです♡";
-
-        button.style.display =
-          "none";
+          "PayPayを開けませんでした💦";
 
         return;
 
       }
 
+    }
 
-      const data =
-        result.snapshot.val();
+
+    /* =========================
+       受け取りページを作る
+       ========================= */
+
+    const value =
+      input.value.trim();
+
+
+    if (!value) {
+      return;
+    }
+
+
+    const baseUrl =
+      "https://pay.paypay.ne.jp/";
+
+
+    const linkPart =
+      value.startsWith(baseUrl)
+        ? value.slice(baseUrl.length)
+        : value;
+
+
+    const paypayUrl =
+      baseUrl + linkPart;
+
+
+    try {
+
+      const newGiftId =
+        crypto.randomUUID()
+          .replaceAll("-", "");
+
+
+      const linkRef =
+        ref(db, "links/" + newGiftId);
+
+
+      await set(linkRef, {
+
+        url: paypayUrl,
+
+        status: "active",
+
+        createdAt: Date.now()
+
+      });
+
+
+      const giftUrl =
+        window.location.origin +
+        window.location.pathname +
+        "?gift=" +
+        newGiftId;
 
 
       resultMessage.textContent =
-        "🎁 受け取り済みです♡";
-
-      button.style.display =
-        "none";
+        "🎁 受け取りページができました♡\n\n" +
+        giftUrl;
 
 
-      window.location.href =
-        data.url;
+      resultMessage.style.display =
+        "block";
 
 
     } catch (error) {
@@ -562,97 +640,17 @@ button.addEventListener("click", async function() {
       console.error(error);
 
       resultMessage.textContent =
-        "うまく受け取れませんでした💦";
+        "ページ作成に失敗しました💦";
+
+      resultMessage.style.display =
+        "block";
 
     }
 
-    return;
-
   }
+);
 
-
-  /* =========================
-     受け取りページを作る
-     ========================= */
-
-  const value =
-    input.value.trim();
-
-
-  if (!value) {
-    return;
-  }
-
-
-  const baseUrl =
-    "https://pay.paypay.ne.jp/";
-
-
-  const linkPart =
-    value.startsWith(baseUrl)
-      ? value.slice(baseUrl.length)
-      : value;
-
-
-  const paypayUrl =
-    baseUrl + linkPart;
-
-
-  try {
-
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
-    }
-
-
-    const newGiftId =
-      crypto.randomUUID().replaceAll("-", "");
-
-
-    const linkRef =
-      ref(db, "links/" + newGiftId);
-
-
-    await set(linkRef, {
-
-      url: paypayUrl,
-
-      status: "active",
-
-      createdAt: Date.now()
-
-    });
-
-
-    const giftUrl =
-      window.location.origin +
-      window.location.pathname +
-      "?gift=" +
-      newGiftId;
-
-
-    resultMessage.textContent =
-      "🎁 受け取りページができました♡\n\n" +
-      giftUrl;
-
-
-    resultMessage.style.display =
-      "block";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    resultMessage.textContent =
-      "ページ作成に失敗しました💦";
-
-    resultMessage.style.display =
-      "block";
-
-  }
-
-});
 </script>
+
 </body>
 </html>
